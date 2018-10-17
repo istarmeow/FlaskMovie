@@ -12,7 +12,9 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/../FlaskMovie\templates" />
+        <option value="$MODULE_DIR$/app/templates" />
+        <option value="$MODULE_DIR$/app/templates/admin" />
+        <option value="$MODULE_DIR$/app/templates/home" />
       </list>
     </option>
   </component>
