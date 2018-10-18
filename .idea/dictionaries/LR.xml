@@ -2,10 +2,14 @@
   <dictionary name="LR">
     <words>
       <w>addtime</w>
+      <w>adminlog</w>
+      <w>adminlogs</w>
       <w>auths</w>
       <w>indexbanner</w>
       <w>moviecollect</w>
       <w>moviecollects</w>
+      <w>operatelog</w>
+      <w>operatelogs</w>
       <w>tablename</w>
       <w>userlog</w>
       <w>userlogs</w>

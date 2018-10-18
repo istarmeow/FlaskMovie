@@ -22,52 +22,52 @@ def pwd():
     return render_template('admin/pwd.html')
 
 
-@admin.route("/tag_add/")
+@admin.route("/tag/add/")
 def tag_add():
     return render_template('admin/tag_add.html')
 
 
-@admin.route("/tag_list/")
+@admin.route("/tag/list/")
 def tag_list():
     return render_template('admin/tag_list.html')
 
 
-@admin.route("/movie_add/")
+@admin.route("/movie/add/")
 def movie_add():
     return render_template('admin/movie_add.html')
 
 
-@admin.route("/movie_list/")
+@admin.route("/movie/list/")
 def movie_list():
     return render_template('admin/movie_list.html')
 
 
-@admin.route("/preview_add/")
+@admin.route("/preview/add/")
 def preview_add():
     return render_template('admin/preview_add.html')
 
 
-@admin.route("/preview_list/")
+@admin.route("/preview/list/")
 def preview_list():
     return render_template('admin/preview_list.html')
 
 
-@admin.route("/user_list/")
+@admin.route("/user/list/")
 def user_list():
     return render_template('admin/user_list.html')
 
 
-@admin.route("/user_view/")
+@admin.route("/user/view/")
 def user_view():
     return render_template('admin/user_view.html')
 
 
-@admin.route("/comment_list/")
+@admin.route("/comment/list/")
 def comment_list():
     return render_template('admin/comment_list.html')
 
 
-@admin.route("/collect_list/")
+@admin.route("/collect/list/")
 def collect_list():
     return render_template('admin/collect_list.html')
 
@@ -87,31 +87,31 @@ def logs_user_log():
     return render_template('admin/logs_user_log.html')
 
 
-@admin.route("/auth_add/")
+@admin.route("/auth/add/")
 def auth_add():
     return render_template('admin/auth_add.html')
 
 
-@admin.route("/auth_list/")
+@admin.route("/auth/list/")
 def auth_list():
     return render_template('admin/auth_list.html')
 
 
-@admin.route("/role_add/")
+@admin.route("/role/add/")
 def role_add():
     return render_template('admin/role_add.html')
 
 
-@admin.route("/role_list/")
+@admin.route("/role/list/")
 def role_list():
     return render_template('admin/role_list.html')
 
 
-@admin.route("/admin_add/")
+@admin.route("/admin/add/")
 def admin_add():
     return render_template('admin/admin_add.html')
 
 
-@admin.route("/admin_list/")
+@admin.route("/admin/list/")
 def admin_list():
     return render_template('admin/admin_list.html')
