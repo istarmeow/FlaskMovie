@@ -140,7 +140,7 @@ class MovieForm(FlaskForm):
         }
     )
     length = StringField(
-        label='播放时长',
+        label='播放时长(分钟)',
         validators=[
             DataRequired('请输入播放时长！')
         ],
