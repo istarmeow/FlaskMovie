@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)  # 创建app对象
 app.debug = True  # 开启调试模式
@@ -7,6 +8,9 @@ app.debug = True  # 开启调试模式
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqlconnector://root:root@127.0.0.1:3306/movie"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config['SECRET_KEY'] = 'b1b7ed6af47d4031acbdeb420658ba84'
+# 定义文件上传保存的路径，在__init__.py文件所在目录创建media文件夹，用于保存上传的文件
+app.config['UP_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'media/')
+
 # 定义db对象，实例化SQLAlchemy，传入app对象
 db = SQLAlchemy(app)
 

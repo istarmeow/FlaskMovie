@@ -30,6 +30,17 @@
                         </div>
                     </div>
                     <div class="box-body table-responsive no-padding">
+                        {% with msgs = get_flashed_messages(category_filter=['ok']) %}
+                            {% if msgs %}
+                                <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    <h4><i class="icon fa fa-check"></i> 成功!</h4>
+                                    {% for msg in msgs %}
+                                        <p>{{ msg }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                         <table class="table table-hover">
                             <tbody>
                             <tr>
@@ -44,21 +55,21 @@
                                 <th>上映时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            {% for i in range(5) %}
+                            {% for movie in page_movies.items %}
                                 <tr>
-                                    <td>1</td>
-                                    <td>环太平洋</td>
-                                    <td>5分钟</td>
-                                    <td>科幻</td>
-                                    <td>美国</td>
-                                    <td>5</td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>2017-01-01</td>
+                                    <td>{{ movie.id }}</td>
+                                    <td>{{ movie.title }}</td>
+                                    <td>{{ movie.length }} 分钟</td>
+                                    <td>{{ movie.tag.name }}</td>
+                                    <td>{{ movie.area }}</td>
+                                    <td>{{ movie.star }} 星</td>
+                                    <td>{{ movie.comment_num }}</td>
+                                    <td>{{ movie.play_num }}</td>
+                                    <td>{{ movie.release_time }}</td>
                                     <td>
                                         <a class="label label-success">编辑</a>
                                         &nbsp;
-                                        <a class="label label-danger">删除</a>
+                                        <a class="label label-danger" href="{{ url_for('admin.movie_delete', delete_id=movie.id) }}">删除</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -66,15 +77,9 @@
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        <!--页码模块-->
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_movies, 'admin.movie_list') }}
                     </div>
                 </div>
             </div>

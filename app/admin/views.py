@@ -1,9 +1,13 @@
 from . import admin
 from flask import render_template, redirect, url_for, flash, session, request
-from app.admin.forms import LoginFrom, TagForm
-from app.models import Admin, Tag
+from app.admin.forms import LoginFrom, TagForm, MovieForm
+from app.models import Admin, Tag, Movie
 from functools import wraps
-from app import db
+from app import db, app
+from werkzeug.utils import secure_filename
+import os
+import uuid  # 生成唯一字符串
+import datetime  # 生成时间
 
 
 def admin_login_require(func):
@@ -13,7 +17,15 @@ def admin_login_require(func):
             # 如果session中未找到该键，则用户需要登录
             return redirect(url_for('admin.login', next=request.url))
         return func(*args, **kwargs)
+
     return decorated_function
+
+
+# 修改文件名称
+def change_filename(filename):
+    fileinfo = os.path.splitext(filename)  # 分离包含路径的文件名与包含点号的扩展名
+    filename = datetime.datetime.now().strftime("%Y%d%H%M%S") + str(uuid.uuid4().hex + fileinfo[-1])
+    return filename
 
 
 @admin.route("/")
@@ -117,16 +129,84 @@ def tag_update(update_id=None):
     return render_template('admin/tag_update.html', form=form, tag=tag)
 
 
-@admin.route("/movie/add/")
+@admin.route("/movie/add/", methods=['GET', 'POST'])
 @admin_login_require
 def movie_add():
-    return render_template('admin/movie_add.html')
+    form = MovieForm()
+    if form.validate_on_submit():
+        data = form.data
+
+        # 获取上传文件的名称
+        file_url = secure_filename(form.url.data.filename)
+        file_logo = secure_filename(form.logo.data.filename)
+        # 文件保存路径操作
+        file_save_path = app.config['UP_DIR']  # 文件上传保存路径
+        if not os.path.exists(file_save_path):
+            os.makedirs(file_save_path)  # 如果文件保存路径不存在，则创建一个多级目录
+            import stat
+            os.chmod(file_save_path, stat.S_IRWXU)  # 授予可读写权限
+        # 对上传的文件进行重命名
+        url = change_filename(file_url)
+        logo = change_filename(file_logo)
+        # 保存文件，需要给文件的保存路径+文件名
+        form.url.data.save(file_save_path + url)
+        form.logo.data.save(file_save_path + logo)
+
+        movie = Movie(
+            title=data['title'],
+            url=url,
+            info=data['info'],
+            logo=logo,
+            star=data['star'],
+            play_num=0,
+            comment_num=0,
+            tag_id=data['tag_id'],
+            area=data['area'],
+            release_time=data['release_time'],
+            length=data['length']
+        )
+        db.session.add(movie)
+        db.session.commit()
+        flash('添加电影成功', 'ok')
+        return redirect(url_for('admin.movie_add'))
+    return render_template('admin/movie_add.html', form=form)
 
 
-@admin.route("/movie/list/")
+@admin.route("/movie/list/<int:page>/", methods=['GET'])
 @admin_login_require
-def movie_list():
-    return render_template('admin/movie_list.html')
+def movie_list(page=None):
+    if page is None:
+        page = 1
+    # 查询的时候关联标签Tag进行查询：使用join(Tag)
+    # 单表过滤使用filter_by，多表关联使用filter，将Tag.id与Movie的tag_id进行关联
+    page_movies = Movie.query.join(Tag).filter(
+        Tag.id == Movie.tag_id
+    ).order_by(
+        Movie.add_time.desc()
+    ).paginate(page=page, per_page=1)
+    return render_template('admin/movie_list.html', page_movies=page_movies)
+
+
+@admin.route("/movie/delete/<int:delete_id>/", methods=['GET'])
+@admin_login_require
+def movie_delete(delete_id=None):
+    if delete_id:
+        movie = Movie.query.filter_by(id=delete_id).first_or_404()
+        print(movie.logo)
+        # 删除电影同时要从磁盘中删除电影的文件和封面文件
+        file_save_path = app.config['UP_DIR']  # 文件上传保存路径
+        # 如果存在将进行删除，不判断，如果文件不存在删除会报错
+        if os.path.exists(os.path.join(file_save_path, movie.url)):
+            os.remove(os.path.join(file_save_path, movie.url))
+        if os.path.exists(os.path.join(file_save_path, movie.logo)):
+            os.remove(os.path.join(file_save_path, movie.logo))
+
+        # 删除数据库，提交修改，注意后面要把与电影有关的评论都要删除
+        db.session.delete(movie)
+        db.session.commit()
+        # 删除后闪现消息
+        flash('删除电影成功！', category='ok')
+    return redirect(url_for('admin.movie_list', page=1))
 
 
 @admin.route("/preview/add/")
