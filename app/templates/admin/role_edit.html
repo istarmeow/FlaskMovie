@@ -17,13 +17,17 @@
                     </div>
                     <form role="form">
                         <div class="box-body">
+                            {% include 'admin/alert_info.html' %}
                             <div class="form-group">
-                                <label for="input_name">角色名称</label>
-                                <input type="text" class="form-control" id="input_name" placeholder="请输入角色名称！">
+                                <label for="input_name">{{ form.name.label }}</label>
+                                {{ form.name }}
+                                {% for err in form.name.errors %}
+                                    <div class="col-md-12" style="color: red">{{ err }}</div>
+                                {% endfor %}
                             </div>
                             <div class="form-group" id="auth_list">
                                 <div class="col-md-12">
-                                    <label>操作权限</label>
+                                    <label>{{ form.auths.label }}</label>
                                 </div>
                                 <div class="col-md-2">
                                     <label>
@@ -33,7 +37,7 @@
                             </div>
                         </div>
                         <div class="box-footer">
-                            <button type="submit" class="btn btn-primary">添加</button>
+                            {{ form.submit }}
                         </div>
                     </form>
                 </div>

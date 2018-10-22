@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm  # 表单基类
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, FileField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, SelectField, FileField, SelectMultipleField
 from wtforms.validators import DataRequired, ValidationError
 from app.models import Admin, Tag
 
@@ -186,6 +186,104 @@ class PreviewForm(FlaskForm):
         validators=[
             DataRequired('请上传预告封面！')
         ],
+    )
+    submit = SubmitField(
+        label='提交',
+        render_kw={
+            'class': "btn btn-primary"
+        }
+    )
+
+
+class PwdForm(FlaskForm):
+    old_pwd = PasswordField(
+        label='旧密码',
+        validators=[
+            DataRequired('请输入旧密码！')
+        ],
+        description='旧密码',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入旧密码",
+            'required': "required"
+        }
+    )
+    new_pwd = PasswordField(
+        label='新密码',
+        validators=[
+            DataRequired('请输入新密码！')
+        ],
+        description='新密码',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入新密码",
+            'required': "required"
+        }
+    )
+    submit = SubmitField(
+        label='提交',
+        render_kw={
+            'class': "btn btn-primary"
+        }
+    )
+
+    def validate_old_pwd(self, field):
+        """检查验证旧密码是否正确"""
+        from flask import session
+        old_pwd = field.data
+        login_name = session['login_admin']
+        admin = Admin.query.filter_by(name=login_name).first()
+        if not admin.check_pwd(old_pwd):
+            raise ValidationError('旧密码错误！')
+
+
+class AuthForm(FlaskForm):
+    name = StringField(
+        label='权限名称',
+        validators=[
+            DataRequired('请输入权限名称！')
+        ],
+        description='请输入权限名称！',
+        render_kw={
+            'class': "form-control"
+        }
+    )
+    url = StringField(
+        label='访问链接',
+        validators=[
+            DataRequired('请输入访问链接！')
+        ],
+        description='请输入访问链接！',
+        render_kw={
+            'class': "form-control",
+            'placeholder': '链接地址'
+        }
+    )
+    submit = SubmitField(
+        label='提交',
+        render_kw={
+            'class': "btn btn-primary"
+        }
+    )
+
+
+class RoleForm(FlaskForm):
+    name = StringField(
+        label='角色名称',
+        validators=[
+            DataRequired('请输入角色名称！')
+        ],
+        description='请输入角色名称！',
+        render_kw={
+            'class': "form-control"
+        }
+    )
+    auths = SelectMultipleField(
+        label='权限列表',
+        description='请选择权限列表！',
+        render_kw={
+            'class': "form-control",
+        }
     )
     submit = SubmitField(
         label='提交',

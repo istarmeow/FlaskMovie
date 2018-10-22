@@ -21,6 +21,7 @@
         {% for msg in get_flashed_messages() %}
             <p class="login-box-msg" style="color: red">{{ msg }}</p>
         {% endfor %}
+        {% include 'admin/alert_info.html' %}
         <form action="" method="post" id="form-data">
             <div class="form-group has-feedback">
                 {#<input name="user" type="text" class="form-control" placeholder="请输入账号！">#}

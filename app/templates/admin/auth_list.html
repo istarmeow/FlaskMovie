@@ -27,6 +27,7 @@
                         </div>
                     </div>
                     <div class="box-body table-responsive no-padding">
+                        {% include 'admin/alert_info.html' %}
                         <table class="table table-hover">
                             <tbody>
                             <tr>
@@ -36,30 +37,25 @@
                                 <th>添加时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>添加标签</td>
-                                <td>/admin/auth_add/</td>
-                                <td>2017-06-01</td>
-                                <td>
-                                    <a class="label label-success">编辑</a>
-                                    &nbsp;
-                                    <a class="label label-danger">删除</a>
-                                </td>
-                            </tr>
+                            {% for auth in page_auths.items %}
+                                <tr>
+                                    <td>{{ auth.id }}</td>
+                                    <td>{{ auth.name }}</td>
+                                    <td>{{ auth.url }}</td>
+                                    <td>{{ auth.add_time }}</td>
+                                    <td>
+                                        <a class="label label-success" href="{{ url_for('admin.auth_update', update_id=auth.id) }}">编辑</a>
+                                        &nbsp;
+                                        <a class="label label-danger" href="{{ url_for('admin.auth_delete', delete_id=auth.id) }}">删除</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_auths, 'admin.auth_list') }}
                     </div>
                 </div>
             </div>
