@@ -28,6 +28,7 @@
                     </div>
                     <div class="box-body table-responsive no-padding">
                         <table class="table table-hover">
+                            {% include 'admin/alert_info.html' %}
                             <tbody>
                             <tr>
                                 <th>编号</th>
@@ -36,32 +37,23 @@
                                 <th>添加时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            {% for i in range(5) %}
-                            <tr>
-                                <td>1</td>
-                                <td>环太平洋</td>
-                                <td>张小明</td>
-                                <td>2017-06-01</td>
-                                <td>
-                                    <a class="label label-success">编辑</a>
-                                    &nbsp;
-                                    <a class="label label-danger">删除</a>
-                                </td>
-                            </tr>
+                            {% for moviecollect in page_moviecollects.items %}
+                                <tr>
+                                    <td>{{ moviecollect.id }}</td>
+                                    <td>{{ moviecollect.movie.title }}</td>
+                                    <td>{{ moviecollect.user.name }}</td>
+                                    <td>{{ moviecollect.add_time }}</td>
+                                    <td>
+                                        <a class="label label-danger" href="{{ url_for('admin.collect_delete', delete_id=moviecollect.id) }}">删除</a>
+                                    </td>
+                                </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_moviecollects, 'admin.collect_list') }}
                     </div>
                 </div>
             </div>

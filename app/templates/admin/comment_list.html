@@ -30,35 +30,31 @@
                         </div>
                     </div>
                     <div class="box-body box-comments">
-                        {% for i in range(5) %}
+                        {% include 'admin/alert_info.html' %}
+
+                        {% for comment in page_comments.items %}
                             <div class="box-comment">
                                 <img class="img-circle img-sm"
-                                     src="{{ url_for('static',filename='admin/dist/img/user3-128x128.jpg') }}" alt="User Image">
+                                     src="{{ url_for('static',filename='user/'+comment.user.face) }}" alt="User Image">
                                 <div class="comment-text">
                                     <span class="username">
-                                        小美
+                                        {{ comment.user.name }}
                                         <span class="text-muted pull-right">
                                             <i class="fa fa-calendar" aria-hidden="true"></i>
                                             &nbsp;
-                                            2017-01-01 12:00:00
+                                            {{ comment.add_time }}
                                         </span>
                                     </span>
-                                    关于电影<a>《环太平洋》</a>的评论：xxx
-                                    <br><a class="label label-danger pull-right">删除</a>
+                                    关于电影<a>《{{ comment.movie.title }}》</a>的评论：{{ comment.content }}
+                                    <br>
+                                    <a class="label label-danger pull-right" href="{{ url_for('admin.comment_delete', delete_id=comment.id) }}">删除</a>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_comments, 'admin.comment_list') }}
                     </div>
                 </div>
             </div>

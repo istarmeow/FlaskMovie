@@ -32,43 +32,37 @@
                             <tbody>
                             <tr>
                                 <td class="td_bd">编号：</td>
-                                <td>1</td>
+                                <td>{{ user.id }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">昵称：</td>
-                                <td>拓荒者</td>
+                                <td>{{ user.name }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">邮箱：</td>
-                                <td>1780316635@qq.com</td>
+                                <td>{{ user.email }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">手机：</td>
-                                <td>13700632835</td>
+                                <td>{{ user.phone }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">头像：</td>
                                 <td>
-                                    <img data-src="holder.js/100x100" class="img-responsive" alt="">
+                                    <img src="{{ url_for('static', filename='user/'+user.face) }}" data-src="holder.js/100x100" class="img-responsive" alt="">
                                 </td>
                             </tr>
                             <tr>
                                 <td class="td_bd">注册时间：</td>
-                                <td>
-                                    2017-01-01 12:00:00
-                                </td>
+                                <td>{{ user.add_time }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">唯一标志符：</td>
-                                <td>
-                                    xxxxxx
-                                </td>
+                                <td>{{ user.uuid }}</td>
                             </tr>
                             <tr>
                                 <td class="td_bd">个性简介：</td>
-                                <td>
-                                    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                                </td>
+                                <td>{{ user.info }}</td>
                             </tr>
                             </tbody>
                         </table>

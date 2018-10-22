@@ -27,6 +27,8 @@
                         </div>
                     </div>
                     <div class="box-body table-responsive no-padding">
+                        {% include 'admin/alert_info.html' %}
+
                         <table class="table table-hover">
                             <tbody>
                             <tr>
@@ -39,39 +41,34 @@
                                 <th>注册时间</th>
                                 <th>操作事项</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>拓荒者</td>
-                                <td>1780316635@qq.com</td>
-                                <td>13700632835</td>
-                                <td>
-                                    <img data-src="holder.js/50x50" class="img-responsive center-block" alt="">
-                                </td>
-                                <td>正常/冻结</td>
-                                <td>2017-06-01 12:00:00</td>
-                                <td>
-                                    <a class="label label-success" href="{{ url_for('admin.user_view') }}">查看</a>
-                                    &nbsp;
-                                    <a class="label label-info">解冻</a>
-                                    &nbsp;
-                                    <a class="label label-warning">冻结</a>
-                                    &nbsp;
-                                    <a class="label label-danger">删除</a>
-                                </td>
-                            </tr>
+                            {% for user in page_users.items %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.phone }}</td>
+                                    <td>
+                                        <img src="{{ url_for('static', filename='user/'+user.face) }}" width="50px" data-src="holder.js/50x50" class="img-responsive center-block" alt="">
+                                    </td>
+                                    <td>正常/冻结</td>
+                                    <td>{{ user.add_time }}</td>
+                                    <td>
+                                        <a class="label label-success" href="{{ url_for('admin.user_view', user_id=user.id) }}">查看</a>
+                                        &nbsp;
+                                        <a class="label label-info">解冻</a>
+                                        &nbsp;
+                                        <a class="label label-warning">冻结</a>
+                                        &nbsp;
+                                        <a class="label label-danger" href="{{ url_for('admin.user_delete', delete_id=user.id) }}">删除</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_users, 'admin.user_list') }}
                     </div>
                 </div>
             </div>
