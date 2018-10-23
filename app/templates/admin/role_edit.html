@@ -15,7 +15,7 @@
                     <div class="box-header with-border">
                         <h3 class="box-title">添加角色</h3>
                     </div>
-                    <form role="form">
+                    <form role="form" method="post">
                         <div class="box-body">
                             {% include 'admin/alert_info.html' %}
                             <div class="form-group">
@@ -29,13 +29,13 @@
                                 <div class="col-md-12">
                                     <label>{{ form.auths.label }}</label>
                                 </div>
-                                <div class="col-md-2">
-                                    <label>
-                                        <input type="checkbox" name="input_url"> 添加标签
-                                    </label>
-                                </div>
+                                {{ form.auths }}
+                                {% for err in form.auths.errors %}
+                                    <div class="col-md-12" style="color: red">{{ err }}</div>
+                                {% endfor %}
                             </div>
                         </div>
+                        {{ form.csrf_token }}
                         <div class="box-footer">
                             {{ form.submit }}
                         </div>
