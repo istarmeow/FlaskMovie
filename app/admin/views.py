@@ -1,7 +1,7 @@
 from . import admin
 from flask import render_template, redirect, url_for, flash, session, request
-from app.admin.forms import LoginFrom, TagForm, MovieForm, PreviewForm, PwdForm, AuthForm, RoleForm
-from app.models import Admin, Tag, Movie, Preview, User, Comment, MovieCollect, Auth, Role
+from app.admin.forms import LoginFrom, TagForm, MovieForm, PreviewForm, PwdForm, AuthForm, RoleForm, AdminForm
+from app.models import Admin, Tag, Movie, Preview, User, Comment, MovieCollect, Auth, Role, Admin
 from functools import wraps
 from app import db, app
 from werkzeug.utils import secure_filename
@@ -10,6 +10,7 @@ import uuid  # 生成唯一字符串
 import datetime  # 生成时间
 
 
+# 要求登录才能访问
 def admin_login_require(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -574,22 +575,90 @@ def auth_update(update_id=None):
 @admin_login_require
 def role_add():
     form = RoleForm()
+    if form.validate_on_submit():
+        data = form.data
+        # print(data['auths'])  # 权限id列表形式[1, 2]
+        role = Role(
+            name=data['name'],
+            auths=','.join(map(lambda item: str(item), data['auths']))  # 数字转换为字符串形式
+        )
+        db.session.add(role)
+        db.session.commit()
+        flash('角色添加成功', category='ok')
     return render_template('admin/role_edit.html', form=form)
 
 
-@admin.route("/role/list/")
+@admin.route("/role/list/<int:page>/")
 @admin_login_require
-def role_list():
-    return render_template('admin/role_list.html')
+def role_list(page=None):
+    if not page:
+        page = 1
+    page_roles = Role.query.order_by(
+        Role.add_time.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template('admin/role_list.html', page_roles=page_roles)
 
 
-@admin.route("/admin/add/")
+@admin.route("/role/delete/<int:delete_id>/")
+@admin_login_require
+def role_delete(delete_id=None):
+    role = Role.query.get_or_404(delete_id)
+    db.session.delete(role)
+    db.session.commit()
+    flash('删除角色成功', category='ok')
+    return redirect(url_for('admin.role_list', page=1))
+
+
+@admin.route("/role/update/<int:update_id>/", methods=['GET', 'POST'])
+@admin_login_require
+def role_update(update_id=None):
+    role = Role.query.get_or_404(update_id)
+    form = RoleForm(
+        name=role.name,
+        auths=list(map(lambda item: int(item), role.auths.split(','))) if role.auths else ''  # 换回int型列表
+    )
+    if form.validate_on_submit():
+        data = form.data
+        role.name = data['name']
+        role.auths = ','.join(map(lambda item: str(item), data['auths']))
+        db.session.commit()
+        flash('角色修改成功！', category='ok')
+    return render_template('admin/role_edit.html', form=form)
+
+
+@admin.route("/admin/add/", methods=['GET', 'POST'])
 @admin_login_require
 def admin_add():
-    return render_template('admin/admin_add.html')
+    form = AdminForm(is_super=1)
+    from werkzeug.security import generate_password_hash
+    # print(form.data)
+    if form.validate_on_submit():
+        data = form.data
+        if Admin.query.filter_by(name=data['name']).count() == 1:
+            flash('管理员已存在！', category='err')
+            return redirect(url_for('admin.admin_add'))
+        add_admin = Admin(
+            name=data['name'],
+            pwd=generate_password_hash(data['pwd']),
+            role_id=data['role_id'],
+            is_super=1
+        )
+        db.session.add(add_admin)
+        db.session.commit()
+        flash('管理员添加成功', category='ok')
+    return render_template('admin/admin_edit.html', form=form)
 
 
-@admin.route("/admin/list/")
+@admin.route("/admin/list/<int:page>")
 @admin_login_require
-def admin_list():
-    return render_template('admin/admin_list.html')
+def admin_list(page=None):
+    if not page:
+        page = 1
+    page_admins = Admin.query.order_by(
+        Admin.add_time.desc()
+    ).join(
+        Role
+    ).filter(
+        Role.id == Admin.role_id  # 关联查询
+    ).paginate(page=page, per_page=10)
+    return render_template('admin/admin_list.html', page_admins=page_admins)

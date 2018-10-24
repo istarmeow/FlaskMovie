@@ -27,6 +27,7 @@
                         </div>
                     </div>
                     <div class="box-body table-responsive no-padding">
+                        {% include 'admin/alert_info.html' %}
                         <table class="table table-hover">
                             <tbody>
                             <tr>
@@ -36,33 +37,21 @@
                                 <th>管理员角色</th>
                                 <th>添加时间</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>user</td>
-                                <td>普通管理员</td>
-                                <td>系统管理员</td>
-                                <td>2017-06-01</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>admin</td>
-                                <td>超级管理员</td>
-                                <td>系统管理员</td>
-                                <td>2017-06-01</td>
-                            </tr>
+                            {% for admin in page_admins.items %}
+                                <tr>
+                                    <td>{{ admin.id }}</td>
+                                    <td>{{ admin.name }}</td>
+                                    <td>{% if admin.is_super == 0 %}超级管理员{% else %}普通管理员{% endif %}</td>
+                                    <td>{{ admin.role.name }}</td>
+                                    <td>{{ admin.add_time }}1</td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix">
-                        <ul class="pagination pagination-sm no-margin pull-right">
-                            <li><a href="#">首页</a></li>
-                            <li><a href="#">上一页</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">下一页</a></li>
-                            <li><a href="#">尾页</a></li>
-                        </ul>
+                        {% import 'admin/pagination.html' as pg %}
+                        {{ pg.render_pagination(page_admins, 'admin.admin_list') }}
                     </div>
                 </div>
             </div>

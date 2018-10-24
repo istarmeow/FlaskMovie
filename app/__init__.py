@@ -23,11 +23,11 @@ import configparser
 config = configparser.ConfigParser()
 config.read(r'C:\ProjectConfig.ini')
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqlconnector://{user}:{password}@{host}:{port}/{db_name}".format(
-    user=config['mysql']['user'],
-    password=config['mysql']['password'],
-    host=config['mysql']['host'],
-    port=config['mysql']['port'],
-    db_name=config['mysql']['db_name']
+    user=config['mysql-flaskmovie']['user'],
+    password=config['mysql-flaskmovie']['password'],
+    host=config['mysql-flaskmovie']['host'],
+    port=config['mysql-flaskmovie']['port'],
+    db_name=config['mysql-flaskmovie']['db_name']
 )
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
