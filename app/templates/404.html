@@ -8,7 +8,7 @@
 <body>
 <!-- 代码 开始 -->
 <div class="fullScreen" id="fullScreen">
-    <img class="rotating" src="../static/404/spaceman.svg">
+    <img class="rotating" src="{{ url_for('static', filename='404/spaceman.svg') }}">
     <div class="pagenotfound-text">
         <h1>迷失在太空中！</h1>
         <h2><a href="#">返回首页</a></h2>

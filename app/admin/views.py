@@ -1,5 +1,5 @@
 from . import admin
-from flask import render_template, redirect, url_for, flash, session, request
+from flask import render_template, redirect, url_for, flash, session, request, abort
 from app.admin.forms import LoginFrom, TagForm, MovieForm, PreviewForm, PwdForm, AuthForm, RoleForm, AdminForm
 from app.models import Admin, Tag, Movie, Preview, User, Comment, MovieCollect, Auth, Role, Admin
 from functools import wraps
@@ -22,6 +22,32 @@ def admin_login_require(func):
     return decorated_function
 
 
+# 权限控制装饰器
+def permission_control(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        login_admin = Admin.query.join(
+            Role
+        ) .filter(
+            Role.id == Admin.role_id,
+            Admin.name == session['login_admin']
+        ).first()
+
+        all_auth = Auth.query.all()  # 数据库所有权限
+
+        auths = login_admin.role.auths
+        auths = list(map(lambda item: int(item), auths.split(',')))  # 用户权限id列表
+        urls = [auth.url for auth in all_auth for admin_auth_id in auths if admin_auth_id == auth.id]
+
+        print(urls)
+        rule = request.url_rule
+        print(rule)  # 需要转为str判断是否在list中
+        if str(rule) not in urls and login_admin.is_super != 0:  # 权限不存在，且不是超级管理员
+            abort(401)
+        return func(*args, **kwargs)
+    return decorated_function
+
+
 # 修改文件名称
 def change_filename(filename):
     fileinfo = os.path.splitext(filename)  # 分离包含路径的文件名与包含点号的扩展名
@@ -32,6 +58,7 @@ def change_filename(filename):
 
 @admin.route("/")
 @admin_login_require
+@permission_control
 def index():
     return render_template('admin/index.html')
 
@@ -79,6 +106,7 @@ def pwd():
 
 @admin.route("/tag/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def tag_add():
     form = TagForm()
     if form.validate_on_submit():
@@ -101,6 +129,7 @@ def tag_add():
 
 @admin.route("/tag/list/<int:page>/", methods=['GET'])
 @admin_login_require
+@permission_control
 def tag_list(page=None):
     if page is None:
         page = 1
@@ -111,6 +140,7 @@ def tag_list(page=None):
 
 @admin.route("/tag/delete/<int:delete_id>/", methods=['GET'])
 @admin_login_require
+@permission_control
 def tag_delete(delete_id=None):
     if delete_id:
         tag = Tag.query.filter_by(id=delete_id).first_or_404()
@@ -123,6 +153,7 @@ def tag_delete(delete_id=None):
 
 @admin.route("/tag/update/<int:update_id>/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def tag_update(update_id=None):
     form = TagForm()
     tag = Tag.query.get_or_404(update_id)  # 首先查询到该标签，用主键查询，如果不存在，则返回404
@@ -143,6 +174,7 @@ def tag_update(update_id=None):
 
 @admin.route("/movie/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def movie_add():
     form = MovieForm()
     if form.validate_on_submit():
@@ -191,6 +223,7 @@ def movie_add():
 
 @admin.route("/movie/list/<int:page>/", methods=['GET'])
 @admin_login_require
+@permission_control
 def movie_list(page=None):
     if page is None:
         page = 1
@@ -206,6 +239,7 @@ def movie_list(page=None):
 
 @admin.route("/movie/delete/<int:delete_id>/", methods=['GET'])
 @admin_login_require
+@permission_control
 def movie_delete(delete_id=None):
     if delete_id:
         movie = Movie.query.filter_by(id=delete_id).first_or_404()
@@ -228,6 +262,7 @@ def movie_delete(delete_id=None):
 
 @admin.route("/movie/update/<int:update_id>/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def movie_update(update_id=None):
     movie = Movie.query.get_or_404(int(update_id))
     # print(movie)
@@ -308,6 +343,7 @@ def movie_update(update_id=None):
 
 @admin.route("/preview/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def preview_add():
     form = PreviewForm()
     if form.validate_on_submit():
@@ -339,6 +375,7 @@ def preview_add():
 
 @admin.route("/preview/list/<int:page>/")
 @admin_login_require
+@permission_control
 def preview_list(page=None):
     page_previews = Preview.query.paginate(page=page, per_page=10)
     return render_template('admin/preview_list.html', page_previews=page_previews)
@@ -346,6 +383,7 @@ def preview_list(page=None):
 
 @admin.route("/preview/delete/<int:delete_id>/", methods=['GET'])
 @admin_login_require
+@permission_control
 def preview_delete(delete_id=None):
     if delete_id:
         preview = Preview.query.filter_by(id=delete_id).first_or_404()
@@ -365,6 +403,7 @@ def preview_delete(delete_id=None):
 
 @admin.route("/preview/update/<int:update_id>/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def preview_update(update_id=None):
     preview = Preview.query.get_or_404(update_id)
     form = PreviewForm(
@@ -407,6 +446,7 @@ def preview_update(update_id=None):
 
 @admin.route("/user/list/<int:page>/")
 @admin_login_require
+@permission_control
 def user_list(page=None):
     if page is None:
         page = 1
@@ -416,6 +456,7 @@ def user_list(page=None):
 
 @admin.route("/user/view/<int:user_id>/")
 @admin_login_require
+@permission_control
 def user_view(user_id=None):
     user = User.query.get_or_404(user_id)
     return render_template('admin/user_view.html', user=user)
@@ -423,6 +464,7 @@ def user_view(user_id=None):
 
 @admin.route("/user/delete/<int:delete_id>/")
 @admin_login_require
+@permission_control
 def user_delete(delete_id=None):
     user = User.query.get_or_404(delete_id)
     # 删除同时要从磁盘中删除封面文件
@@ -441,6 +483,7 @@ def user_delete(delete_id=None):
 
 @admin.route("/comment/list/<int:page>/")
 @admin_login_require
+@permission_control
 def comment_list(page=None):
     if page is None:
         page = 1
@@ -459,6 +502,7 @@ def comment_list(page=None):
 
 @admin.route("/comment/delete/<int:delete_id>")
 @admin_login_require
+@permission_control
 def comment_delete(delete_id=None):
     comment = Comment.query.get_or_404(delete_id)
     db.session.delete(comment)
@@ -469,6 +513,7 @@ def comment_delete(delete_id=None):
 
 @admin.route("/collect/list/<int:page>/")
 @admin_login_require
+@permission_control
 def collect_list(page=None):
     if page is None:
         page = 1
@@ -487,6 +532,7 @@ def collect_list(page=None):
 
 @admin.route("/collect/delete/<int:delete_id>")
 @admin_login_require
+@permission_control
 def collect_delete(delete_id=None):
     moviecollect = MovieCollect.query.get_or_404(delete_id)
     db.session.delete(moviecollect)
@@ -497,24 +543,28 @@ def collect_delete(delete_id=None):
 
 @admin.route("/logs/operate_log/")
 @admin_login_require
+@permission_control
 def logs_operate_log():
     return render_template('admin/logs_operate_log.html')
 
 
 @admin.route("/logs/admin_log/")
 @admin_login_require
+@permission_control
 def logs_admin_log():
     return render_template('admin/logs_admin_log.html')
 
 
 @admin.route("/logs/user_log/")
 @admin_login_require
+@permission_control
 def logs_user_log():
     return render_template('admin/logs_user_log.html')
 
 
 @admin.route("/auth/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def auth_add():
     form = AuthForm()
     if form.validate_on_submit():
@@ -534,6 +584,7 @@ def auth_add():
 
 @admin.route("/auth/list/<int:page>/")
 @admin_login_require
+@permission_control
 def auth_list(page=None):
     if not page:
         page = 1
@@ -543,6 +594,7 @@ def auth_list(page=None):
 
 @admin.route("/auth/delete/<int:delete_id>/")
 @admin_login_require
+@permission_control
 def auth_delete(delete_id=None):
     auth = Auth.query.get_or_404(delete_id)
     db.session.delete(auth)
@@ -553,6 +605,7 @@ def auth_delete(delete_id=None):
 
 @admin.route("/auth/update/<int:update_id>/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def auth_update(update_id=None):
     auth = Auth.query.get_or_404(update_id)
     form = AuthForm(
@@ -573,6 +626,7 @@ def auth_update(update_id=None):
 
 @admin.route("/role/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def role_add():
     form = RoleForm()
     if form.validate_on_submit():
@@ -590,6 +644,7 @@ def role_add():
 
 @admin.route("/role/list/<int:page>/")
 @admin_login_require
+@permission_control
 def role_list(page=None):
     if not page:
         page = 1
@@ -601,6 +656,7 @@ def role_list(page=None):
 
 @admin.route("/role/delete/<int:delete_id>/")
 @admin_login_require
+@permission_control
 def role_delete(delete_id=None):
     role = Role.query.get_or_404(delete_id)
     db.session.delete(role)
@@ -611,6 +667,7 @@ def role_delete(delete_id=None):
 
 @admin.route("/role/update/<int:update_id>/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def role_update(update_id=None):
     role = Role.query.get_or_404(update_id)
     form = RoleForm(
@@ -628,6 +685,7 @@ def role_update(update_id=None):
 
 @admin.route("/admin/add/", methods=['GET', 'POST'])
 @admin_login_require
+@permission_control
 def admin_add():
     form = AdminForm(is_super=1)
     from werkzeug.security import generate_password_hash
@@ -651,6 +709,7 @@ def admin_add():
 
 @admin.route("/admin/list/<int:page>")
 @admin_login_require
+@permission_control
 def admin_list(page=None):
     if not page:
         page = 1
