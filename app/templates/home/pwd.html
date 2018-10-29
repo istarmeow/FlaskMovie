@@ -17,19 +17,45 @@
                 <h3 class="panel-title"><span class="glyphicon glyphicon-map-marker"></span>&nbsp;会员中心</h3>
             </div>
             <div class="panel-body">
-                <form role="form">
+                {% with msgs = get_flashed_messages(category_filter=['ok']) %}
+                    {% if msgs %}
+                        {% for msg in msgs %}
+                            <p>{{ msg }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% with msgs = get_flashed_messages(category_filter=['err']) %}
+                    {% if msgs %}
+                        {% for msg in msgs %}
+                            <p>{{ msg }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <form role="form" method="post">
                     <fieldset>
                         <div class="form-group">
-                            <label for="input_oldpwd"><span class="glyphicon glyphicon-lock"></span>&nbsp;旧密码</label>
-                            <input id="input_oldpwd" class="form-control" placeholder="旧密码" name="oldpwd" type="password" autofocus>
+                            <label for="input_oldpwd"><span class="glyphicon glyphicon-lock"></span>&nbsp;{{ form.oldpwd.label }}</label>
+                            {{ form.oldpwd }}
                         </div>
-                        <div class="col-md-12" id="error_oldpwd"></div>
+                        {% for err in form.oldpwd.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
                         <div class="form-group">
-                            <label for="input_newpwd"><span class="glyphicon glyphicon-lock"></span>&nbsp;新密码</label>
-                            <input id="input_newpwd" class="form-control" placeholder="新密码" name="newpwd" type="password" autofocus>
+                            <label for="input_newpwd"><span class="glyphicon glyphicon-lock"></span>&nbsp;{{ form.newpwd.label }}</label>
+                            {{ form.newpwd }}
                         </div>
-                        <div class="col-md-12" id="error_newpwd"></div>
-                        <a href="{{ url_for('home.user') }}" class="btn btn-success"><span class="glyphicon glyphicon-edit"></span>&nbsp;修改密码</a>
+                        {% for err in form.newpwd.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                        <div class="form-group">
+                            <label for="input_newpwd"><span class="glyphicon glyphicon-lock"></span>&nbsp;{{ form.repwd.label }}</label>
+                            {{ form.repwd }}
+                        </div>
+                        {% for err in form.repwd.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                        {{ form.csrf_token }}
+                        {{ form.submit }}
                     </fieldset>
                 </form>
             </div>
@@ -39,7 +65,7 @@
 
 {% block js %}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#m-2").addClass('active');
         });
     </script>

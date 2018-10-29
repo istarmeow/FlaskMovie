@@ -139,3 +139,119 @@ class LoginFrom(FlaskForm):
         num = User.query.filter_by(name=account).count()
         if num == 0:
             raise ValidationError('账号不存在')
+
+
+class UserDetailForm(FlaskForm):
+    name = StringField(
+        label='昵称',
+        validators=[
+            DataRequired('请输入昵称！')
+        ],
+        description='昵称',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入昵称",
+            'required': "required",
+            'autofocus': "autofocus"
+        }
+    )
+    email = StringField(
+        label='邮箱',
+        validators=[
+            DataRequired('请输入邮箱！'),
+            Email('邮箱格式不正确')
+        ],
+        description='邮箱',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入邮箱",
+            'required': "required",
+            'autofocus': "autofocus"
+        }
+    )
+    phone = StringField(
+        label='手机',
+        validators=[
+            DataRequired('请输入手机！'),
+            Regexp('^1[3|4|5|6|7|8][0-9]\d{4,8}$', message='手机格式不正确')
+        ],
+        description='手机',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入手机",
+            'required': "required",
+            'autofocus': "autofocus"
+        }
+    )
+    face = FileField(
+        label='头像',
+        validators=[
+            DataRequired('请上传头像')
+        ],
+        description='头像',
+    )
+    info = TextAreaField(
+        label='简介',
+        validators=[
+            DataRequired('请输入简介！')
+        ],
+        description='简介',
+        render_kw={
+            'class': "form-control",
+            'rows': "10",
+        }
+    )
+    submit = SubmitField(
+        label='保存',
+        render_kw={
+            'class': "btn btn-success"
+        }
+    )
+
+
+class PwdForm(FlaskForm):
+    oldpwd = PasswordField(
+        label='旧密码',
+        validators=[
+            DataRequired('请输入旧密码！')
+        ],
+        description='旧密码',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入旧密码",
+            'required': "required",
+            'autofocus': 'autofocus'
+        }
+    )
+    newpwd = PasswordField(
+        label='新密码',
+        validators=[
+            DataRequired('请输入新密码！')
+        ],
+        description='新密码',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入新密码",
+            'required': "required",
+            'autofocus': 'autofocus'
+        }
+    )
+    repwd = PasswordField(
+        label='重复密码',
+        validators=[
+            DataRequired('请输入重复密码！'),
+            EqualTo('newpwd', message='两次密码不一致')
+        ],
+        description='重复密码',
+        render_kw={
+            'class': "form-control",
+            'placeholder': "请输入重复密码",
+            'required': "required"
+        }
+    )
+    submit = SubmitField(
+        label='修改密码',
+        render_kw={
+            'class': "btn btn-success"
+        }
+    )

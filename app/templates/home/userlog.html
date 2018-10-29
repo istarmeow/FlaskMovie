@@ -24,19 +24,18 @@
                         <td style="width:30%">登录IP</td>
                         <td style="width:30%">登录地址</td>
                     </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>2017-01-01 12:00:00</td>
-                        <td>192.168.4.1</td>
-                        <td>云南昆明</td>
-                    </tr>
+                    {% for user_log in page_user_logs.items %}
+                        <tr>
+                            <td>{{ user_log.id }}</td>
+                            <td>{{ user_log.add_time }}</td>
+                            <td>{{ user_log.ip }}</td>
+                            <td>xxx</td>
+                        </tr>
+                    {% endfor %}
                 </table>
+
+                {% import 'home/pagination.html' as pg %}
+                {{ pg.render_pagination(page_user_logs, 'home.userlog') }}
             </div>
         </div>
     </div>

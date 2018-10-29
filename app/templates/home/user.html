@@ -17,36 +17,64 @@
                 <h3 class="panel-title"><span class="glyphicon glyphicon-map-marker"></span>&nbsp;会员中心</h3>
             </div>
             <div class="panel-body">
-                <form role="form">
+                {% with msgs = get_flashed_messages(category_filter=['ok']) %}
+                    {% if msgs %}
+                        {% for msg in msgs %}
+                            <p>{{ msg }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% with msgs = get_flashed_messages(category_filter=['err']) %}
+                    {% if msgs %}
+                        {% for msg in msgs %}
+                            <p>{{ msg }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <form role="form" method="post" enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
-                            <label for="input_name"><span class="glyphicon glyphicon-user"></span>&nbsp;昵称</label>
-                            <input id="input_name" class="form-control" placeholder="昵称" name="name" type="text" autofocus value="">
+                            <label for="input_name"><span class="glyphicon glyphicon-user"></span>&nbsp;{{ form.name.label }}</label>
+                            {{ form.name }}
                         </div>
-                        <div class="col-md-12" id="error_name"></div>
+                        {% for err in form.name.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
                         <div class="form-group">
-                            <label for="input_email"><span class="glyphicon glyphicon-envelope"></span>&nbsp;邮箱</label>
-                            <input id="input_email" class="form-control" placeholder="邮箱" name="email" type="email" autofocus value="">
+                            <label for="input_email"><span class="glyphicon glyphicon-envelope"></span>&nbsp;{{ form.email.label }}</label>
+                            {{ form.email }}
                         </div>
-                        <div class="col-md-12" id="error_email"></div>
+                        {% for err in form.email.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
                         <div class="form-group">
-                            <label for="input_phone"><span class="glyphicon glyphicon-phone"></span>&nbsp;手机</label>
-                            <input id="input_phone" class="form-control" placeholder="手机" name="phone" type="text" autofocus value="">
+                            <label for="input_phone"><span class="glyphicon glyphicon-phone"></span>&nbsp;{{ form.phone.label }}</label>
+                            {{ form.phone }}
                         </div>
-                        <div class="col-md-12" id="error_phone"></div>
+                        {% for err in form.phone.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
                         <div class="form-group">
-                            <label for="input_face"><span class="glyphicon glyphicon-picture"></span>&nbsp;头像</label>
-                            <img src="holder.js/100x100" class="img-responsive img-rounded">
-                            <a class="btn btn-primary" style="margin-top:6px;"><span class="glyphicon glyphicon-open"></span>&nbsp;上传头像</a>
-                            <input id="input_face" class="form-control" name="face" type="hidden" autofocus>
+                            <label for="input_face"><span class="glyphicon glyphicon-picture"></span>&nbsp;{{ form.face.label }}</label>
+                            {% if login_user.face %}
+                                <img src="{{ url_for('static', filename='user/'+login_user.face) }}" class="img-responsive img-rounded" style="width: 100px">
+                            {% else %}
+                                <img data-src="holder.js/100x100" class="img-responsive img-rounded">
+                            {% endif %}
+                            {{ form.face }}
                         </div>
-                        <div class="col-md-12" id="error_face"></div>
+                        {% for err in form.face.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
                         <div class="form-group">
-                            <label for="input_info"><span class="glyphicon glyphicon-edit"></span>&nbsp;简介</label>
-                            <textarea class="form-control" rows="10" id="input_info"></textarea>
+                            <label for="input_info"><span class="glyphicon glyphicon-edit"></span>&nbsp;{{ form.info.label }}</label>
+                            {{ form.info }}
                         </div>
-                        <div class="col-md-12" id="error_info"></div>
-                        <a href="{{ url_for('home.user') }}" class="btn btn-success"><span class="glyphicon glyphicon-saved"></span>&nbsp;保存修改</a>
+                        {% for err in form.info.errors %}
+                            <div class="col-md-12" style="color: red">{{ err }}</div>
+                        {% endfor %}
+                        {{ form.csrf_token }}
+                        {{ form.submit }}
                     </fieldset>
                 </form>
             </div>
@@ -56,7 +84,7 @@
 
 {% block js %}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#m-1").addClass('active');
         });
     </script>

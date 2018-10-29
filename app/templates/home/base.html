@@ -46,9 +46,11 @@
         <div class="navbar-collapse collapse">
             <form class="navbar-form navbar-left" role="search" style="margin-top:18px;">
                 <div class="form-group input-group">
-                    <input type="text" class="form-control" placeholder="请输入电影名！">
+                    <input type="text" class="form-control" placeholder="请输入电影名！" id="keyword" value="{{ keyword }}"
+                           onkeydown="if(event.keyCode===13)return false;"
+                    >
                     <span class="input-group-btn">
-                        <a class="btn btn-default" href="{{ url_for('home.search') }}"><span class="glyphicon glyphicon-search"></span>&nbsp;搜索</a>
+                        <a class="btn btn-default" id="do_search"><span class="glyphicon glyphicon-search"></span>&nbsp;搜索</a>
                     </span>
                 </div>
             </form>
@@ -77,9 +79,9 @@
 <!--导航-->
 <!--内容-->
 {% block container %}
-<div class="container" style="margin-top:76px">
-    {% block content %}{% endblock content %}
-</div>
+    <div class="container" style="margin-top:76px">
+        {% block content %}{% endblock content %}
+    </div>
 {% endblock container %}
 <!--内容-->
 <!--底部-->
@@ -114,6 +116,16 @@
         });
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        $("#do_search").click(function () {
+            let keyword = $('#keyword').val();
+            location.href = "{{ url_for('home.search') }}?keyword=" + keyword;
+        });
+    })
+</script>
+
 {% block js %}{% endblock %}
 </body>
 </html>

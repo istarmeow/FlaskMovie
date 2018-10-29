@@ -1,0 +1,43 @@
+<div class="col-md-12 text-center" style="margin-top:6px;">
+    <nav aria-label="Page navigation">
+        {% macro render_pagination(pagination, url_route) %}
+            <ul class="pagination">
+                <li>
+                    <a href="{{ url_for(url_route, page=1) }}" aria-label="First">
+                        <span aria-hidden="true">首页</span>
+                    </a>
+                </li>
+                {% if pagination.has_prev %}
+                    <li>
+                        <a href="{{ url_for(url_route, page=pagination.prev_num) }}" aria-label="Previous">
+                            <span aria-hidden="true">上一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {%- for page in pagination.iter_pages() %}
+                    {% if page %}
+                        {% if page != pagination.page %}
+                            <li><a href="{{ url_for(url_route, page=page) }}">{{ page }}</a></li>
+                        {% else %}
+                            <li><a style="background: #0d6aad; color: white">{{ page }}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {%- endfor %}
+
+                {% if pagination.has_next %}
+                    <li>
+                        <a href="{{ url_for(url_route, page=pagination.next_num) }}" aria-label="Next">
+                            <span aria-hidden="true">下一页</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="{{ url_for(url_route, page=pagination.pages) }}" aria-label="Last">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+                </li>
+            </ul>
+        {% endmacro %}
+    </nav>
+</div>
