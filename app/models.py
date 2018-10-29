@@ -21,6 +21,11 @@ class User(db.Model):
     def __repr__(self):  # 查询的时候返回
         return "<User %r>" % self.name
 
+    def check_pwd(self, pwd):
+        """验证密码是否正确"""
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.pwd, pwd)
+
 
 # 会员日志
 class UserLog(db.Model):

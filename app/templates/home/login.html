@@ -8,19 +8,26 @@
                     <h3 class="panel-title"><span class="glyphicon glyphicon-log-in"></span>&nbsp;会员登录</h3>
                 </div>
                 <div class="panel-body">
-                    <form role="form">
+                    {% include 'home/alert_info.html' %}
+                    <form role="form" method="post">
                         <fieldset>
                             <div class="form-group">
-                                <label for="input_contact"><span class="glyphicon glyphicon-user"></span>&nbsp;账号</label>
-                                <input id="input_contact" class="form-control input-lg" placeholder="用户名/邮箱/手机号码" name="contact" type="text" autofocus>
+                                <label for="input_contact"><span class="glyphicon glyphicon-user"></span>&nbsp;{{ form.name.label }}</label>
+                                {{ form.name }}
+                                {% for err in form.name.errors %}
+                                    <div class="col-md-12" style="color: red">{{ err }}</div>
+                                {% endfor %}
                             </div>
                             <div class="col-md-12" id="error_contact"></div>
                             <div class="form-group">
-                                <label for="input_password"><span class="glyphicon glyphicon-lock"></span>&nbsp;密码</label>
-                                <input id="input_password" class="form-control input-lg" placeholder="密码" name="password" type="password" value="">
+                                <label for="input_password"><span class="glyphicon glyphicon-lock"></span>&nbsp;{{ form.pwd.label }}</label>
+                                {{ form.pwd }}
+                                {% for err in form.pwd.errors %}
+                                    <div class="col-md-12" style="color: red">{{ err }}</div>
+                                {% endfor %}
                             </div>
-                            <div class="col-md-12" id="error_password"></div>
-                            <a href="{{ url_for('home.user') }}" class="btn btn-lg btn-success btn-block">登录</a>
+                            {{ form.csrf_token }}
+                            {{ form.submit }}
                         </fieldset>
                     </form>
                 </div>

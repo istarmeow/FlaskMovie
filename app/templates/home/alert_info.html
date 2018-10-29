@@ -1,0 +1,14 @@
+{% with msgs = get_flashed_messages(category_filter=['ok']) %}
+    {% if msgs %}
+        {% for msg in msgs %}
+            <p>{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% with msgs = get_flashed_messages(category_filter=['err']) %}
+    {% if msgs %}
+        {% for msg in msgs %}
+            <p>{{ msg }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
