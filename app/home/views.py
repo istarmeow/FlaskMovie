@@ -290,8 +290,8 @@ def play(movie_id=None, page=None):
         db.session.add(comment)
         movie.comment_num += 1
         db.session.commit()
-        # 就不写消息闪现了
-        return redirect(url_for('home.play', movie_id=movie.id))
+        flash('评论成功', category='ok')
+        return redirect(url_for('home.play', movie_id=movie.id, page=1))
 
     if page is None:
         page = 1
@@ -306,5 +306,27 @@ def play(movie_id=None, page=None):
     ).order_by(
         Comment.add_time.desc()
     ).paginate(page=page, per_page=10)
-
     return render_template('home/play.html', movie=movie, form=form, page_comments=page_comments)
+
+
+@home.route('/moviecollect/add/')
+@user_login_require
+def add_moviecollect():
+    movie_id = request.args.get('movie_id', '')
+    user_id = request.args.get('user_id', '')
+    movie_collect = MovieCollect.query.filter_by(
+        user_id=int(user_id),
+        movie_id=int(movie_id)
+    )
+    if movie_collect.count() == 1:
+        data = dict(ok=0)
+    if movie_collect.count() == 0:
+        movie_collect = MovieCollect(
+            user_id=int(user_id),
+            movie_id=int(movie_id)
+        )
+        db.session.add(movie_collect)
+        db.session.commit()
+        data = dict(ok=1)
+    import json
+    return json.dumps(data)

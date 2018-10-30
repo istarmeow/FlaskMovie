@@ -114,6 +114,7 @@
                             <strong>请先<a href="{{ url_for('home.login') }}" class="text-info">登录</a>，才可参与评论！</strong>
                         </div>
                     {% endif %}
+                    {% include 'home/alert_info.html' %}
                     <ol class="breadcrumb" style="margin-top:6px;">
                         <li>全部评论({{ movie.comment_num }})</li>
                     </ol>
@@ -129,7 +130,10 @@
                         {{ form.submit }}
                         &nbsp;
                         {% if 'login_user' in session %}
-                            <a class="btn btn-danger" id="btn-col"><span class="glyphicon glyphicon-heart"></span>&nbsp;收藏电影</a>
+                            <a class="btn btn-danger" id="btn-col">
+                                <span class="glyphicon glyphicon-heart"></span>&nbsp;收藏电影
+                            </a>
+                            <span id="show_collect_msg"></span>
                         {% endif %}
                     </form>
                     <ul class="commentList">
@@ -157,7 +161,7 @@
                     </ul>
                     <div class="col-md-12 text-center">
                         <nav aria-label="Page navigation">
-                            <ul class="page_comments">
+                            <ul class="pagination">
                                 <li>
                                     <a href="{{ url_for('home.play', movie_id=movie.id, page=1) }}" aria-label="First">
                                         <span aria-hidden="true">首页</span>
@@ -243,4 +247,28 @@ var ue = UE.getEditor('input_content',{
 	});
 </script>
 <!--播放页面-->
+<script>
+    $(document).ready(function () {
+        $("#btn-col").click(function () {
+            var movie_id = {{ movie.id }};
+            var user_id = {{ session['login_user_id'] }};
+            $.ajax({
+                url: "{{ url_for('home.add_moviecollect') }}",
+                type: "GET",
+                data: "movie_id=" + movie_id + "&user_id=" + user_id,
+                dataType: "json",
+                success: function (res) {
+                    if (res.ok == 1) {
+                        $("#show_collect_msg").empty();
+                        $("#show_collect_msg").append("收藏成功！");
+                    } else {
+                        $("#show_collect_msg").empty();
+                        $("#show_collect_msg").append("已经收藏！");
+                    }
+                }
+            })
+        });
+    });
+</script>
+
 {% endblock %}
