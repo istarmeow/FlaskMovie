@@ -18,72 +18,30 @@
             </div>
             <div class="panel-body">
                 <ul class="commentList">
-                    <li class="item cl">
-                        <a href="user.html">
-                            <i class="avatar size-L radius">
-                                <img alt="50x50" src="holder.js/50x50" class="img-circle" style="border:1px solid #abcdef;">
-                            </i>
-                        </a>
-                        <div class="comment-main">
-                            <header class="comment-header">
-                                <div class="comment-meta">
-                                    <a class="comment-author" href="user.html">xiaoli</a>
-                                    评论于
-                                    <time title="2016-12-07 09:12:51" datetime="2016-12-07 09:12:51">2017-03-01 09:12:51</time>
+                    {% for comment in page_comments.items %}
+                        <li class="item cl">
+                            <a href="user.html">
+                                <i class="avatar size-L radius">
+                                    <img alt="50x50" src="{{ url_for('static', filename='user/' + comment.user.face) }}" class="img-circle" style="border:1px solid #abcdef; width: 50px">
+                                </i>
+                            </a>
+                            <div class="comment-main">
+                                <header class="comment-header">
+                                    <div class="comment-meta">
+                                        <a class="comment-author" href="{{ url_for('home.user') }}">{{ comment.user.name }}</a>
+                                        评论于
+                                        <time title="{{ comment.add_time }}" datetime="{{ comment.add_time }}">{{ comment.add_time }}</time>
+                                    </div>
+                                </header>
+                                <div class="comment-body">
+                                    <p>{{ comment.content }}！</p>
                                 </div>
-                            </header>
-                            <div class="comment-body">
-                                <p>这电影真好看！</p>
                             </div>
-                        </div>
-                    </li>
-                    <li class="item cl">
-                        <a href="user.html">
-                            <i class="avatar size-L radius">
-                                <img alt="50x50" src="holder.js/50x50" class="img-circle" style="border:1px solid #abcdef;">
-                            </i>
-                        </a>
-                        <div class="comment-main">
-                            <header class="comment-header">
-                                <div class="comment-meta">
-                                    <a class="comment-author" href="user.html">xiaoli</a>
-                                    评论于
-                                    <time title="2016-12-07 09:12:51" datetime="2016-12-07 09:12:51">2017-03-01 09:12:51</time>
-                                </div>
-                            </header>
-                            <div class="comment-body">
-                                <p>这电影真好看！</p>
-                            </div>
-                        </div>
-                    </li>
+                        </li>
+                    {% endfor %}
                 </ul>
-                <div class="col-md-12 text-center">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a href="#" aria-label="First">
-                                    <span aria-hidden="true">首页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">上一页</span>
-                                </a>
-                            </li>
-                            <li><a href="#">1&nbsp;/&nbsp;10</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <span aria-hidden="true">下一页</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" aria-label="Last">
-                                    <span aria-hidden="true">尾页</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                {% import 'home/pagination.html' as pg %}
+                {{ pg.render_pagination(page_comments, 'home.comments') }}
             </div>
         </div>
     </div>

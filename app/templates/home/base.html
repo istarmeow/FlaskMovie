@@ -37,7 +37,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="{{ url_for('home.index') }}" class="navbar-brand" style="width:250px;">
+            <a href="{{ url_for('home.index', page=1) }}" class="navbar-brand" style="width:250px;">
                 <img src="{{ url_for('static', filename='base/images/logo.png') }}" style="height:30px;">&nbsp;微电影
             </a>
         </div>
@@ -56,7 +56,7 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="curlink" href="{{ url_for('home.index') }}"><span class="glyphicon glyphicon-film"></span>&nbsp;电影</a>
+                    <a class="curlink" href="{{ url_for('home.index', page=1) }}"><span class="glyphicon glyphicon-film"></span>&nbsp;电影</a>
                 </li>
                 <li>
                     <a class="curlink" href="{{ url_for('home.login') }}"><span class="glyphicon glyphicon-log-in"></span>&nbsp;登录</a>

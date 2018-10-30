@@ -1,7 +1,7 @@
 from . import home
 from flask import render_template, redirect, url_for, flash, session, request
 from .forms import RegisterForm, LoginFrom, UserDetailForm, PwdForm
-from app.models import User, UserLog, Preview, Movie
+from app.models import User, UserLog, Preview, Movie, MovieCollect, Comment, Tag
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 import os
@@ -22,9 +22,67 @@ def user_login_require(func):
     return decorated_function
 
 
-@home.route("/")
-def index():
-    return render_template('home/index.html')
+@home.route("/<int:page>/")
+def index(page):
+    if not page:
+        page = 1
+    all_tag = Tag.query.all()
+    # 星级转换
+    star_list = [(1, '1星'), (2, '2星'), (3, '3星'), (4, '4星'), (5, '5星')]
+    all_star = map(lambda x: {'num': x[0], 'info': x[1]}, star_list)
+    # 年份列表
+    import time
+    now_year = time.localtime()[0]
+    year_range = [year for year in range(int(now_year)-1, int(now_year)-5, -1)]
+    # print(year_range)
+    page_movies = Movie.query
+    selected = dict()
+    tag_id = request.args.get('tag_id', 0)  # 获取链接中的标签id，0为显示所有
+    if int(tag_id) != 0:
+        page_movies = page_movies.filter_by(tag_id=tag_id)
+    selected['tag_id'] = tag_id
+
+    star_num = request.args.get('star_num', 0)  # 获取星级数字，0为显示所有
+    if int(star_num) != 0:
+        page_movies = page_movies.filter_by(star=star_num)
+    selected['star_num'] = int(star_num)
+
+    time_year = request.args.get('time_year', 1)  # 1为所有日期，0为更早，月份为所选
+    from sqlalchemy import extract, exists, between
+    if int(time_year) == 0:
+        page_movies = page_movies  # !!!没写这个功能
+    elif int(time_year) == 1:
+        page_movies = page_movies  # 所有年份的电影
+    else:
+        page_movies = page_movies.filter(extract('year', Movie.release_time) == time_year)  # 筛选年份
+    selected['time_year'] = time_year
+
+    play_num = request.args.get('play_num', 1)  # 1为从高到低，0为从低到好
+    if int(play_num) == 1:
+        page_movies = page_movies.order_by(
+            Movie.play_num.desc()
+        )
+    else:
+        page_movies = page_movies.order_by(Movie.play_num.asc())
+    selected['play_num'] = play_num
+
+    comment_num = request.args.get('comment_num', 1)  # 1为从高到低，0为从低到好
+    if int(comment_num) == 1:
+        page_movies = page_movies.order_by(
+            Movie.comment_num.desc()
+        )
+    else:
+        page_movies = page_movies.order_by(Movie.comment_num.asc())
+    selected['comment_num'] = comment_num
+
+    page_movies = page_movies.paginate(page=page, per_page=12)
+    return render_template('home/index.html',
+                           all_tag=all_tag,
+                           all_star=all_star,
+                           now_year=now_year,
+                           year_range=year_range,
+                           selected=selected,
+                           page_movies=page_movies)
 
 
 @home.route("/indexbanner/")
@@ -152,10 +210,17 @@ def pwd():
     return render_template('home/pwd.html', form=form)
 
 
-@home.route('/comments/')
+@home.route('/comments/<int:page>/')
 @user_login_require
-def comments():
-    return render_template('home/comments.html')
+def comments(page):
+    if not page:
+        page = 1
+    page_comments =Comment.query.filter_by(
+        user_id=int(session['login_user_id'])
+    ).order_by(
+        Comment.add_time.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template('home/comments.html', page_comments=page_comments)
 
 
 @home.route('/userlog/<int:page>/')
@@ -172,10 +237,17 @@ def userlog(page=None):
     return render_template('home/userlog.html', page_user_logs=page_user_logs)
 
 
-@home.route('/moviecollect/')
+@home.route('/moviecollect/<int:page>/')
 @user_login_require
-def moviecollect():
-    return render_template('home/moviecollect.html')
+def moviecollect(page):
+    if not page:
+        page = 1
+    page_moviecollects = MovieCollect.query.filter_by(
+        user_id=int(session['login_user_id'])
+    ).order_by(
+        MovieCollect.add_time.desc()
+    ).paginate(page=page, per_page=10)
+    return render_template('home/moviecollect.html', page_moviecollects=page_moviecollects)
 
 
 @home.route('/search/')
