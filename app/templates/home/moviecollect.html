@@ -21,12 +21,12 @@
                     {% for moviecollect in page_moviecollects.items %}
                         <div class="media">
                             <div class="media-left">
-                                <a href="{{ url_for('home.play') }}">
+                                <a href="{{ url_for('home.play', movie_id=moviecollect.movie.id, page=1) }}">
                                     <img class="media-object" src="{{ url_for('static', filename='media/' + moviecollect.movie.logo) }}" alt="{{ moviecollect.movie.title }}" style="width: 120px">
                                 </a>
                             </div>
                             <div class="media-body">
-                                <h4 class="media-heading">{{ moviecollect.movie.title }}<a href="{{ url_for('home.play') }}" class="label label-primary pull-right"><span class="glyphicon glyphicon-play"></span>播放影片</a></h4>
+                                <h4 class="media-heading">{{ moviecollect.movie.title }}<a href="{{ url_for('home.play', movie_id=moviecollect.movie.id, page=1) }}" class="label label-primary pull-right"><span class="glyphicon glyphicon-play"></span>播放影片</a></h4>
                                 {{ moviecollect.movie.info }}
                             </div>
                         </div>

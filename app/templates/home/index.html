@@ -87,7 +87,7 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            <a href="{{ url_for('home.play') }}" class="btn btn-primary" target="_blank" role="button"><span class="glyphicon glyphicon-play"></span>&nbsp;播放</a>
+                            <a href="{{ url_for('home.play', movie_id=movie.id, page=1) }}" class="btn btn-primary" target="_blank" role="button"><span class="glyphicon glyphicon-play"></span>&nbsp;播放</a>
                         </div>
                     </div>
                 {% endfor %}

@@ -34,25 +34,25 @@
                             <td style="width:30%;color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-film"></span>&nbsp;片名
                             </td>
-                            <td>环太平洋</td>
+                            <td>{{ movie.title }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-tag"></span>&nbsp;标签
                             </td>
-                            <td>科幻</td>
+                            <td>{{ movie.tag.name }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-time"></span>&nbsp;片长
                             </td>
-                            <td>05:04</td>
+                            <td>{{ movie.length }} 分钟</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-map-marker"></span>&nbsp;地区
                             </td>
-                            <td>美国</td>
+                            <td>{{ movie.area }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
@@ -60,11 +60,12 @@
                             </td>
                             <td>
                                 <div>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
-                                    <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
+                                    {% for i in range(movie.star) %}
+                                        <span class="glyphicon glyphicon-star" style="color:#FFD119"></span>
+                                    {% endfor %}
+                                    {% for i in range(5 - movie.star) %}
+                                        <span class="glyphicon glyphicon-star-empty" style="color:#FFD119"></span>
+                                    {% endfor %}
                                 </div>
                             </td>
                         </tr>
@@ -72,26 +73,26 @@
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-calendar"></span>&nbsp;上映时间
                             </td>
-                            <td>2013年7月12日</td>
+                            <td>{{ movie.release_time }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-play"></span>&nbsp;播放数量
                             </td>
-                            <td>1000</td>
+                            <td>{{ movie.play_num }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-comment"></span>&nbsp;评论数量
                             </td>
-                            <td>1000</td>
+                            <td>{{ movie.comment_num }}</td>
                         </tr>
                         <tr>
                             <td style="color:#ccc;font-weight:bold;font-style:italic;">
                                 <span class="glyphicon glyphicon-picture"></span>&nbsp;影片介绍
                             </td>
                             <td>
-                                该片主要讲述了人类为了抵抗怪兽的进攻，研制出了高大的机器战士与来犯怪兽进行对抗的故事。
+                                {{ movie.info }}
                             </td>
                         </tr>
                     </table>
@@ -104,94 +105,97 @@
                     <h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span>&nbsp;电影评论</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span aria-hidden="true">×</span>
-                            <span class="sr-only">Close</span>
-                        </button>
-                        <strong>请先<a href="login.html" target="_blank" class="text-info">登录</a>，才可参与评论！</strong>
-                    </div>
+                    {% if 'login_user' not in session %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span aria-hidden="true">×</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <strong>请先<a href="{{ url_for('home.login') }}" class="text-info">登录</a>，才可参与评论！</strong>
+                        </div>
+                    {% endif %}
                     <ol class="breadcrumb" style="margin-top:6px;">
-                        <li>全部评论(5)</li>
+                        <li>全部评论({{ movie.comment_num }})</li>
                     </ol>
-                    <form role="form" style="margin-bottom:6px;">
+                    <form role="form" style="margin-bottom:6px;" method="post">
                         <div class="form-group">
                             <div>
-                                <label for="input_content">内容</label>
-                                <textarea id="input_content"></textarea>
+                                <label for="input_content">{{ form.content.label }}</label>
+                                {{ form.content }}
                             </div>
                             <div class="col-xs-12" id="error_content"></div>
                         </div>
-                        <a class="btn btn-success" id="btn-sub"><span class="glyphicon glyphicon-edit"></span>&nbsp;提交评论</a>
+                        {{ form.csrf_token }}
+                        {{ form.submit }}
                         &nbsp;
-                        <a class="btn btn-danger" id="btn-col"><span class="glyphicon glyphicon-heart"></span>&nbsp;收藏电影</a>
+                        {% if 'login_user' in session %}
+                            <a class="btn btn-danger" id="btn-col"><span class="glyphicon glyphicon-heart"></span>&nbsp;收藏电影</a>
+                        {% endif %}
                     </form>
                     <ul class="commentList">
-                        <li class="item cl">
-                            <a href="{{ url_for('home.user') }}">
-                                <i class="avatar size-L radius">
-                                    <img alt="50x50" src="holder.js/50x50" class="img-circle" style="border:1px solid #abcdef;">
-                                </i>
-                            </a>
-                            <div class="comment-main">
-                                <header class="comment-header">
-                                    <div class="comment-meta">
-                                        <a class="comment-author" href="{{ url_for('home.user') }}">xiaoli</a>
-                                        评论于
-                                        <time title="2016-12-07 09:12:51" datetime="2016-12-07 09:12:51">2017-03-01 09:12:51</time>
+                        {% for comment in page_comments.items %}
+                            <li class="item cl">
+                                <a href="{{ url_for('home.user') }}">
+                                    <i class="avatar size-L radius">
+                                        <img alt="50x50" src="{{ url_for('static', filename='user/' + comment.user.face) }}" class="img-circle" style="border:1px solid #abcdef;width: 50px">
+                                    </i>
+                                </a>
+                                <div class="comment-main">
+                                    <header class="comment-header">
+                                        <div class="comment-meta">
+                                            <a class="comment-author" href="{{ url_for('home.user') }}">{{ comment.user.name }}</a>
+                                            评论于
+                                            <time title="{{ comment.add_time }}" datetime="{{ comment.add_time }}">{{ comment.add_time }}</time>
+                                        </div>
+                                    </header>
+                                    <div class="comment-body">
+                                        <p>{{ comment.content }}</p>
                                     </div>
-                                </header>
-                                <div class="comment-body">
-                                    <p>这电影真好看！</p>
                                 </div>
-                            </div>
-                        </li>
-                        <li class="item cl">
-                            <a href="{{ url_for('home.user') }}">
-                                <i class="avatar size-L radius">
-                                    <img alt="50x50" src="holder.js/50x50" class="img-circle" style="border:1px solid #abcdef;">
-                                </i>
-                            </a>
-                            <div class="comment-main">
-                                <header class="comment-header">
-                                    <div class="comment-meta">
-                                        <a class="comment-author" href="{{ url_for('home.user') }}">xiaoli</a>
-                                        评论于
-                                        <time title="2016-12-07 09:12:51" datetime="2016-12-07 09:12:51">2017-03-01 09:12:51</time>
-                                    </div>
-                                </header>
-                                <div class="comment-body">
-                                    <p>这电影真好看！</p>
-                                </div>
-                            </div>
-                        </li>
+                            </li>
+                        {% endfor %}
                     </ul>
                     <div class="col-md-12 text-center">
                         <nav aria-label="Page navigation">
-                            <ul class="pagination">
+                            <ul class="page_comments">
                                 <li>
-                                    <a href="#" aria-label="First">
+                                    <a href="{{ url_for('home.play', movie_id=movie.id, page=1) }}" aria-label="First">
                                         <span aria-hidden="true">首页</span>
                                     </a>
                                 </li>
+                                {% if page_comments.has_prev %}
+                                    <li>
+                                        <a href="{{ url_for('home.play', movie_id=movie.id, page=page_comments.prev_num) }}" aria-label="Previous">
+                                            <span aria-hidden="true">上一页</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {%- for page in page_comments.iter_pages() %}
+                                    {% if page %}
+                                        {% if page != page_comments.page %}
+                                            <li><a href="{{ url_for('home.play', movie_id=movie.id, page=page) }}">{{ page }}</a></li>
+                                        {% else %}
+                                            <li><a style="background: #0d6aad; color: white">{{ page }}</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {%- endfor %}
+
+                                {% if page_comments.has_next %}
+                                    <li>
+                                        <a href="{{ url_for('home.play', movie_id=movie.id, page=page_comments.next_num) }}" aria-label="Next">
+                                            <span aria-hidden="true">下一页</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
                                 <li>
-                                    <a href="#" aria-label="Previous">
-                                        <span aria-hidden="true">上一页</span>
-                                    </a>
-                                </li>
-                                <li><a href="#">1&nbsp;/&nbsp;10</a></li>
-                                <li>
-                                    <a href="#" aria-label="Next">
-                                        <span aria-hidden="true">下一页</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" aria-label="Last">
+                                    <a href="{{ url_for('home.play', movie_id=movie.id, page=page_comments.pages) }}" aria-label="Last">
                                         <span aria-hidden="true">尾页</span>
                                     </a>
                                 </li>
                             </ul>
                         </nav>
+
                     </div>
                 </div>
             </div>
@@ -218,8 +222,8 @@ var ue = UE.getEditor('input_content',{
 	jwplayer("moviecontainer").setup({
 		flashplayer: "{{ url_for('static', filename='jwplayer/jwplayer.flash.swf') }}",
 		playlist: [{
-			file: "{{ url_for('static', filename='video/htpy.mp4') }}",
-			title: "环太平洋"
+			file: "{{ url_for('static', filename='media/' + movie.url) }}",
+			title: "{{ movie.title }}"
 		}],
 		modes: [{
 			type: "html5"
