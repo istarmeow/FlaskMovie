@@ -36,6 +36,15 @@ app.config['SECRET_KEY'] = 'b1b7ed6af47d4031acbdeb420658ba84'
 app.config['UP_DIR'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static/media/')
 app.config['USER_IMAGE'] = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static/user/')  # 存放用户头像的路径
 
+# 配置redis
+from flask_redis import FlaskRedis
+app.config["REDIS_URL"] = 'redis://:{password}@{host}:{port}/1'.format(
+    host=config['redis-djangostarmeow']['host'],
+    port=config['redis-djangostarmeow']['port'],
+    password=config['redis-djangostarmeow']['password'],
+)
+rd = FlaskRedis(app)
+
 # 定义db对象，实例化SQLAlchemy，传入app对象
 db = SQLAlchemy(app)
 
