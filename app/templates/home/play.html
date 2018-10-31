@@ -152,7 +152,11 @@
                             <li class="item cl">
                                 <a href="{{ url_for('home.user') }}">
                                     <i class="avatar size-L radius">
-                                        <img alt="50x50" src="{{ url_for('static', filename='user/' + comment.user.face) }}" class="img-circle" style="border:1px solid #abcdef;width: 50px">
+                                        {% if comment.user.face %}
+                                            <img alt="50x50" src="{{ url_for('static', filename='user/' + comment.user.face) }}" class="img-circle" style="border:1px solid #abcdef;width: 50px">
+                                        {% else %}
+                                            <img alt="50x50" src="holder.js/50x50" class="img-circle" style="border:1px solid #abcdef;">
+                                        {% endif %}
                                     </i>
                                 </a>
                                 <div class="comment-main">
